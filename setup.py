@@ -18,4 +18,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    # for dependencies see https://python-packaging.readthedocs.io/en/latest/dependencies.html
 ) 
