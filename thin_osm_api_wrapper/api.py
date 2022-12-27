@@ -1,20 +1,58 @@
 import requests
 
-def history_json(object_type, object_id):
+def history_json(object_type, object_id, user_agent=None):
     url = 'https://api.openstreetmap.org/api/0.6/' + object_type + '/' + str(object_id) + '/history.json'
-    params = {
-        'user_agent': 'who_added_this_tag_script'
-    }
+    params = {}
+    if user_agent != None:
+        params = {
+            'user_agent': user_agent
+        }
     json_data = {}
     r = make_get_request(url, params, json_data)
     if r.status_code != 200:
         print(r.status_code)
     return r.json()['elements']
 
+def changeset_list_json(bbox=None, user_id=None, closed_after=None, created_before=None, user_agent=None):
+    # https://wiki.openstreetmap.org/wiki/API_v0.6#Query:_GET_/api/0.6/changesets
+    # "by display name" deliberately not supported as unstable and asking for subtle bugs
+    # TODO: turn it into generator?
+    parameters = []
+    if bbox != None:
+        # create min_lon,min_lat,max_lon,max_lat formatted query parameter
+        min_lon = bbox['min_lon']
+        min_lat = bbox['min_lat']
+        max_lon = bbox['max_lon']
+        max_lat = bbox['max_lat']
+        parameters.append("bbox=" + str(min_lon) + "," + str(min_lat) + "," + str(max_lon) + "," + str(max_lat))
+    if user_id != None:
+        raise NotImplementedError
+    url = 'https://api.openstreetmap.org/api/0.6/changesets.json'
+    if closed_after == None and created_before != None:
+        raise NotImplementedError
+    if closed_after != None and created_before == None:
+        parameters.append("time=" + closed_after)
+    if closed_after != None and created_before != None:
+        parameters.append("time=" + closed_after + "," + created_before)
+    params = {}
+    if user_agent != None:
+        params = {
+            'user_agent': user_agent
+        }
+    json_data = {}
+    if parameters != []:
+        url += "?" + "&".join(parameters)
+    r = make_get_request(url, params, json_data)
+    if r.status_code != 200:
+        print(r.status_code)
+        raise
+    return r.json()
+
 def make_get_request(url, params, json_data):
-    # unifiy it with overpass downloader code?
+    # unify it with overpass downloader code?
     while True:
         try:
+            print(url)
             return requests.get(url, params=params, json=json_data)
         except requests.exceptions.ConnectionError as e:
             print(e)

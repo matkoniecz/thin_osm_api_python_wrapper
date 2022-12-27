@@ -10,12 +10,29 @@ python3 -m unittest
 
 # Usage examples
 
+## Object history
+
 ```
 import thin_osm_api_wrapper
+import json
 
 object_type = "way"
-id = 10101010
-print(thin_osm_api_wrapper.api.history_json(object_type, object_id))
+object_id = 10101010
+data = thin_osm_api_wrapper.api.history_json(object_type, object_id)
+print(json.dumps(data, indent=3))
+```
+## List changesets
+
+```
+import thin_osm_api_wrapper
+import json
+
+data = thin_osm_api_wrapper.api.changeset_list_json()
+print(json.dumps(data, indent=3))
+closed_after = "2021-12-26"
+created_before = "2021-12-27"
+data = thin_osm_api_wrapper.api.changeset_list_json(closed_after=closed_after, created_before=created_before)
+print(json.dumps(data, indent=3))
 ```
 
 # Related projects
