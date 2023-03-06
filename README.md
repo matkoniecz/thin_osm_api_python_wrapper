@@ -1,3 +1,8 @@
+# Replaced
+See [osm_easy_api](https://github.com/docentYT/osm_easy_api)
+
+# Original readme
+
 This is intended as a minimal wrapper over [OSM Editing API](https://wiki.openstreetmap.org/wiki/API), to make easy to understand what is going on.
 
 It contains thin wrapper only for parts that I needed so far.
