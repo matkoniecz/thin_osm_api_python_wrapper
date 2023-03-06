@@ -1,4 +1,5 @@
 import requests
+from lxml import etree
 
 def history_json(object_type, object_id, user_agent=None):
     url = 'https://api.openstreetmap.org/api/0.6/' + object_type + '/' + str(object_id) + '/history.json'
@@ -12,6 +13,32 @@ def history_json(object_type, object_id, user_agent=None):
     if r.status_code != 200:
         print(r.status_code)
     return r.json()['elements']
+
+def element_list_touched_by_changeset(changeset_id, user_agent=None):
+    # https://wiki.openstreetmap.org/wiki/API_v0.6#Download:_GET_/api/0.6/changeset/#id/download
+    # parse XML
+    url = 'https://api.openstreetmap.org/api/0.6/changeset/' + str(changeset_id) + '/download'
+    params = {}
+    if user_agent != None:
+        params = {
+            'user_agent': user_agent
+        }
+    r = make_get_request(url, params)
+    if r.status_code != 200:
+        print(r.status_code)
+        raise
+    print(r)
+    print(r.content)
+    print()
+    print()
+    print(changeset_id)
+    root = etree.fromstring(r.content)
+    for lxml_element in root.getiterator():
+        if(lxml_element.tag in ["relation", "way", "node"]):
+            print(lxml_element.tag, lxml_element.attrib["id"])
+    print()
+    #print(str(r.content))
+    #print(dir(r))
 
 def changeset_list_json(bbox=None, user_id=None, closed_after=None, created_before=None, user_agent=None):
     # https://wiki.openstreetmap.org/wiki/API_v0.6#Query:_GET_/api/0.6/changesets
@@ -48,7 +75,7 @@ def changeset_list_json(bbox=None, user_id=None, closed_after=None, created_befo
         raise
     return r.json()
 
-def make_get_request(url, params, json_data):
+def make_get_request(url, params, json_data={}):
     # unify it with overpass downloader code?
     while True:
         try:
@@ -79,3 +106,5 @@ def make_get_request(url, params, json_data):
             print(e)
             sleep_before_retry("urllib3.exceptions.ProtocolError", url, params, json_data)
             continue
+
+element_list_touched_by_changeset('133124436')
