@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="thin_osm_api_wrapper",
-    version="0.0.1",
+    version="0.0.4",
     author="Mateusz Konieczny",
     description="thin wrapper of https://wiki.openstreetmap.org/wiki/API",
     long_description=long_description,

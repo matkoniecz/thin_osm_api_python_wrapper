@@ -1,5 +1,6 @@
 import requests
 from lxml import etree
+import time
 
 def history_json(object_type, object_id, user_agent=None):
     url = 'https://api.openstreetmap.org/api/0.6/' + object_type + '/' + str(object_id) + '/history.json'
@@ -107,4 +108,6 @@ def make_get_request(url, params, json_data={}):
             sleep_before_retry("urllib3.exceptions.ProtocolError", url, params, json_data)
             continue
 
-element_list_touched_by_changeset('133124436')
+def sleep_before_retry(message, url, params, json_data):
+    time.sleep(10)
+    print(message, url, params, json_data)
