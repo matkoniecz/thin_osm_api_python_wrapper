@@ -14,7 +14,15 @@ def history_json(object_type, object_id, user_agent=None):
     r = make_get_request(url, params, json_data)
     if r.status_code != 200:
         print(r.status_code)
-    return r.json()['elements']
+    if r.status_code == 503:
+        print("will retry after waiting")
+        time.sleep(60)
+        return history_json(object_type, object_id, user_agent)
+    try:
+        return r.json()['elements']
+    except simplejson.errors.JSONDecodeError:
+        print(r)
+        raise Exception("wat?")
 
 def element_list_touched_by_changeset(changeset_id, user_agent=None):
     # https://wiki.openstreetmap.org/wiki/API_v0.6#Download:_GET_/api/0.6/changeset/#id/download
